@@ -137,7 +137,7 @@ class CPU:
             elif instruction == PUSH:
                 self.reg[SP] -= 1
                 valueFromRegister = self.reg[operand_a]
-                self.ram_write(valueFromRegister, self.reg[SP])
+                self.ram_write(self.reg[SP], valueFromRegister)
                 self.pc += 2
 
             elif instruction == POP:
