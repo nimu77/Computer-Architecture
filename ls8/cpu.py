@@ -6,6 +6,10 @@ HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
+PUSH = 0b01000101
+POP = 0b01000110
+
+SP = 7
 class CPU:
     """Main CPU class."""
 
@@ -129,5 +133,17 @@ class CPU:
             elif instruction == MUL:
                 self.reg[operand_a] *= self.reg[operand_b]
                 self.pc += 3
+
+            elif instruction == PUSH:
+                self.reg[SP] -= 1
+                valueFromRegister = self.reg[operand_a]
+                self.ram_write(valueFromRegister, self.reg[SP])
+                self.pc += 2
+
+            elif instruction == POP:
+                topmostvalue = self.ram_read(self.reg[SP])
+                self.reg[operand_a] = topmostvalue
+                self.reg[SP] += 1
+                self.pc += 2
 
 
