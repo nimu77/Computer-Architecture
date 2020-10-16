@@ -11,6 +11,10 @@ POP = 0b01000110
 CALL = 0b01010000
 RET = 0b00010001
 ADD = 0b10100000
+CMP = 0b10100111
+JMP = 0b01010100
+JNE = 0b01010110
+JEQ = 0b01010101
 
 SP = 7
 class CPU:
@@ -22,7 +26,8 @@ class CPU:
         self.ram = [0] * 256
         self.reg[SP] = 0xF4
         self.pc = 0
-        self.halted = False    
+        self.halted = False 
+        self.fl = 0b00000000 
         
     def ram_read(self, address):
         '''accept the address to read and return the value stored there'''
@@ -102,7 +107,7 @@ class CPU:
 
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
+            # self.fl,
             #self.ie,
             self.ram_read(self.pc),
             self.ram_read(self.pc + 1),
@@ -162,4 +167,31 @@ class CPU:
             elif instruction == ADD:
                 self.reg[operand_a] += self.reg[operand_b]
                 self.pc += 3
+
+            elif instruction == CMP:
+                if self.reg[operand_a] == self.reg[operand_b]:
+                    self.fl = 0b00000001
+                elif self.reg[operand_a] < self.reg[operand_b]:
+                    self.fl = 0b00000100
+                elif self.reg[operand_a] > self.reg[operand_b]:
+                    self.fl = 0b00000010
+                self.pc += 3
+                # print(self.reg[operand_b])
+
+            elif instruction == JMP:
+                self.pc = self.reg[operand_a]
+
+            elif instruction == JEQ:
+                if self.fl & 0b1 == 1:
+                    self.pc = self.reg[operand_a]
+                else:
+                    self.pc += 2
+
+            elif instruction == JNE:
+                if self.fl & 0b1 == 0:
+                    self.pc = self.reg[operand_a]
+                else:
+                    self.pc += 2
+
+            
 
